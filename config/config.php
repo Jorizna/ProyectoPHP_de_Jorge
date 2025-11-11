@@ -8,7 +8,7 @@
 $DB_HOST = "localhost";      // Servidor (normalmente localhost)
 $DB_USER = "root";           // Usuario (por defecto en XAMPP)
 $DB_PASS = "";               // Contraseña (vacía por defecto)
-$DB_NAME = "spot-pesca"; // Nombre de tu base de datos
+$DB_NAME = "mountain-connect"; // Nombre de tu base de datos
 
 // 2. Conexión a la base de datos
 // (Aquí normalmente se crea la conexión con mysqli o PDO)
@@ -21,8 +21,8 @@ $DB_NAME = "spot-pesca"; // Nombre de tu base de datos
 // }
 
 // 4. Ajustes generales del sitio
-$site_name = "SpotPesca";
-$base_url  = "http://localhost/spot-pesca/"; // Ajusta a tu entorno local
+$site_name = "MountainConnect";
+$base_url  = "http://localhost/mountain-connect/"; // Ajusta a tu entorno local
 
 // 5. Inicio de sesión (opcional, según tu flujo)
 if (session_status() === PHP_SESSION_NONE) {
@@ -32,4 +32,4 @@ if (session_status() === PHP_SESSION_NONE) {
 // ----------------------------------------------------------------------
 // FIN DE CONFIGURACIÓN
 // ----------------------------------------------------------------------
-?>
+?>º

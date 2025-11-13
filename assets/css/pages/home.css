@@ -1,0 +1,77 @@
+.home-container {
+    text-align: center;
+    padding: 3rem 1rem;
+    background: linear-gradient(180deg, #f9f9f9, #eef3f1);
+    min-height: 85vh;
+}
+
+.home-title {
+    font-size: 2.5rem;
+    color: #6d2a94;
+}
+
+.home-title span {
+    color: #6d2a94;
+}
+
+.home-subtitle {
+    margin-bottom: 2rem;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.cards-container {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin: 2rem auto;
+    max-width: 900px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    width: 250px;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.card h3 {
+    color: #6d2a94;
+}
+
+.explore-btn {
+    display: inline-block;
+    margin: 0.5rem;
+    padding: 0.8rem 1.2rem;
+    background: #6d2a94;
+    color: white;
+    text-decoration: none;
+    border-radius: 0.8rem;
+}
+
+.explore-btn:hover {
+    background: #6d2a94;
+}
+
+.cta {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+}
+
+.cta a {
+    color: #6d2a94;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.cta a:hover {
+    text-decoration: underline;
+}

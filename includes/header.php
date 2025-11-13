@@ -1,94 +1,51 @@
 <?php
-// Header sencillo y dinámico
+// Inicia la sesión solo si no está activa
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Definir base URL del proyecto en XAMPP
+$base_url = '/mountain-connect/public';
 ?>
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
     <title>MountainConnect</title>
-    <link rel="stylesheet" href="/mountain-connect/assets/css/style.css">
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            margin: 0
-        }
-
-        header {
-            background: #2c3e50;
-            color: #fff;
-            padding: 12px
-        }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 12px
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px
-        }
-
-        .brand img {
-            height: 48px
-        }
-
-        nav {
-            margin-top: 8px
-        }
-
-        nav a {
-            color: #fff;
-            margin-right: 12px;
-            text-decoration: none
-        }
-
-        nav a:hover {
-            text-decoration: underline
-        }
-
-        main {
-            padding: 18px;
-            max-width: 1000px;
-            margin: 0 auto
-        }
-
-        .msg-success {
-            color: green
-        }
-
-        .msg-error {
-            color: #b00020
-        }
-    </style>
+    <link rel="stylesheet" href="<?= $base_url ?>/../assets/css/style.css">
 </head>
-
 <body>
-    <header>
-        <div class="container">
-            <div class="brand">
-                <img src="/mountain-connect/assets/images/logo.png" alt="Logo">
-                <h1 style="margin:0;font-size:20px">MountainConnect</h1>
-            </div>
-            <nav>
-                <a href="/mountain-connect/public/index.php">Inicio</a>
-                <a href="/mountain-connect/public/routes/list.php">Rutas</a>
-                <?php if (!empty($_SESSION['user_id'])): ?>
-                    <span style="color:#fff">Hola, <?= htmlspecialchars($_SESSION['username']); ?></span>
-                    <a href="/mountain-connect/public/profile.php">Perfil</a>
-                    <a href="/mountain-connect/public/logout.php">Cerrar sesión</a>
-                <?php else: ?>
-                    <a href="/mountain-connect/public/register.php">Registro</a>
-                    <a href="/mountain-connect/public/login.php">Login</a>
-                <?php endif; ?>
-            </nav>
+<header>
+    <div class="header-container">
+        <!-- Logo -->
+        <div class="logo">
+            <a href="<?= $base_url ?>/index.php">
+                <img src="<?= $base_url ?>/../assets/images/logo.png" alt="MountainConnect Logo" height="50">
+            </a>
         </div>
-    </header>
-    <main>
+
+        <!-- Título centrado -->
+        <div class="header-title">MOUNTAIN CONNECT</div>
+
+        <!-- Navegación -->
+        <nav>
+            <ul>
+                <li><a href="<?= $base_url ?>/index.php">Inicio</a></li>
+                <?php if (isset($_SESSION['user'])): ?>
+                    <li>
+                        <a href="#">Hola, <?= htmlspecialchars($_SESSION['user']['username']) ?></a>
+                        <ul class="dropdown">
+                            <li><a href="<?= $base_url ?>/profile.php">Mi perfil</a></li>
+                            <li><a href="<?= $base_url ?>/routes/list.php">Mis actividades</a></li>
+                            <li><a href="<?= $base_url ?>/logout.php">Cerrar sesión</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="<?= $base_url ?>/routes/create.php">Crear actividad</a></li>
+                <?php else: ?>
+                    <li><a href="<?= $base_url ?>/login.php">Login</a></li>
+                    <li><a href="<?= $base_url ?>/register.php">Registro</a></li>
+                <?php endif; ?>
+            </ul>
+        </nav>
+    </div>
+</header>

@@ -1,37 +1,32 @@
 <?php
-// ==============================
-// public/register.php
-// ==============================
-
-// 1️⃣ Iniciar la sesión
 session_start();
+require_once __DIR__ . '/../includes/functions.php';
 
-// 2️⃣ Asegurar que el array de usuarios exista
+// Aseguramos el array de usuarios
 if (!isset($_SESSION['users']) || !is_array($_SESSION['users'])) {
     $_SESSION['users'] = [];
 }
 
-// 3️⃣ Variables auxiliares
 $errors = [];
-$success = '';
 
-// 4️⃣ Procesar formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
+    $username = limpiar_dato($_POST['username'] ?? '');
+    $email = limpiar_dato($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
+    $nivel_experiencia = limpiar_dato($_POST['nivel_experiencia'] ?? '');
+    $especialidad = limpiar_dato($_POST['especialidad'] ?? '');
+    $provincia = limpiar_dato($_POST['provincia'] ?? '');
 
-    // Validaciones básicas
+    // Validaciones
     if ($username === '' || $email === '' || $password === '' || $confirm === '') {
-        $errors[] = 'Todos los campos son obligatorios.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Todos los campos obligatorios deben completarse.';
+    } elseif (!validar_email($email)) {
         $errors[] = 'El formato del email no es válido.';
     } elseif ($password !== $confirm) {
         $errors[] = 'Las contraseñas no coinciden.';
     }
 
-    // Verificar que el email no esté repetido
     foreach ($_SESSION['users'] as $u) {
         if ($u['email'] === $email) {
             $errors[] = 'Ya existe un usuario con ese correo electrónico.';
@@ -39,24 +34,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Si no hay errores → registrar usuario
+    // Si todo va bien
     if (empty($errors)) {
         $_SESSION['users'][] = [
             'id' => count($_SESSION['users']) + 1,
             'username' => $username,
             'email' => $email,
-            // En esta fase sin base de datos ni hash
-            'password' => $password
+            'password' => $password,
+            'nivel_experiencia' => $nivel_experiencia,
+            'especialidad' => $especialidad,
+            'provincia' => $provincia
         ];
 
-        // Guardar mensaje de éxito para mostrar en login
         $_SESSION['success'] = 'Registro correcto. Ya puedes iniciar sesión.';
         header('Location: /mountain-connect/public/login.php');
         exit;
     }
 }
 
-// 5️⃣ Incluir el header
 include_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -66,7 +61,7 @@ include_once __DIR__ . '/../includes/header.php';
     <div class="msg-error">
         <ul>
             <?php foreach ($errors as $err): ?>
-                <li><?= htmlspecialchars($err) ?></li>
+                <li><?= limpiar_dato($err) ?></li>
             <?php endforeach; ?>
         </ul>
     </div>
@@ -74,16 +69,40 @@ include_once __DIR__ . '/../includes/header.php';
 
 <form method="post" action="">
     <label>Nombre de usuario:</label><br>
-    <input type="text" name="username" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required><br><br>
+    <input type="text" name="username" required><br><br>
 
     <label>Email:</label><br>
-    <input type="email" name="email" value="<?= htmlspecialchars($_POST['email'] ?? '') ?>" required><br><br>
+    <input type="email" name="email" required><br><br>
 
     <label>Contraseña:</label><br>
     <input type="password" name="password" required><br><br>
 
     <label>Confirmar contraseña:</label><br>
     <input type="password" name="confirm_password" required><br><br>
+
+    <label>Nivel de experiencia:</label><br>
+    <select name="nivel_experiencia" required>
+        <option value="">Selecciona...</option>
+        <option value="Principiante">Principiante</option>
+        <option value="Intermedio">Intermedio</option>
+        <option value="Avanzado">Avanzado</option>
+        <option value="Experto">Experto</option>
+    </select><br><br>
+
+    <label>Especialidad:</label><br>
+    <input type="text" name="especialidad" placeholder="Ej: senderismo, escalada..." required><br><br>
+
+    <label>Provincia:</label><br>
+    <select name="provincia" required>
+        <option value="">Selecciona provincia...</option>
+        <option value="Madrid">Madrid</option>
+        <option value="Barcelona">Barcelona</option>
+        <option value="Valencia">Valencia</option>
+        <option value="Sevilla">Sevilla</option>
+        <option value="Granada">Granada</option>
+        <option value="Zaragoza">Zaragoza</option>
+        <option value="Asturias">Asturias</option>
+    </select><br><br>
 
     <button type="submit">Registrarse</button>
 </form>

@@ -9,7 +9,6 @@ if (!isset($_SESSION['actividades']) || !is_array($_SESSION['actividades'])) {
 
 $errors = [];
 $success = '';
-
 $provincias = ['Madrid', 'Barcelona', 'Valencia', 'Granada', 'Zaragoza', 'Sevilla', 'Asturias'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,6 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Completa todos los campos obligatorios.';
     }
 
+    // Subida de fotos
     if (isset($_FILES['fotos']) && $_FILES['fotos']['error'][0] !== 4) {
         foreach ($_FILES['fotos']['tmp_name'] as $i => $tmp_name) {
             $nombre_original = $_FILES['fotos']['name'][$i];
@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $_SESSION['actividades'][] = [
             'id' => count($_SESSION['actividades']) + 1,
+            'user_id' => $_SESSION['user']['id'] ?? 0, // ← Guardar usuario
             'tipo' => $tipo,
             'nombre' => $nombre,
             'dificultad' => $dificultad,
@@ -95,7 +96,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     <?php endif; ?>
 
-    <!-- FORMULARIO SIEMPRE VISIBLE -->
     <form method="post" enctype="multipart/form-data">
         <label>Tipo de actividad:</label>
         <select name="tipo" required>
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <label>Provincia:</label>
         <select name="provincia" required>
             <option value="">-- Selecciona --</option>
-            <?php foreach ($provincias as $p) echo "<option>".htmlspecialchars($p)."</option>"; ?>
+            <?php foreach ($provincias as $p) echo "<option>" . htmlspecialchars($p) . "</option>"; ?>
         </select><br><br>
 
         <label>Época recomendada:</label><br>
@@ -152,8 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <button type="submit">💾 Guardar</button>
     </form>
-
-    <p><a href="create.php">➕ Crear otra actividad</a></p>
 </div>
 
 <?php include_once __DIR__ . '/../../includes/footer.php'; ?>
+<link rel="stylesheet" href="<?= $base_url ?>/../assets/css/pages/login.css">

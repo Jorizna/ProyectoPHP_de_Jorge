@@ -2,14 +2,12 @@
 session_start();
 include_once __DIR__ . '/../../includes/header.php';
 
-$tipo = $_GET['tipo'] ?? null; // null significa mostrar todas
+$tipo = $_GET['tipo'] ?? null; 
 $actividades = $_SESSION['actividades'] ?? [];
 $user_id = $_SESSION['user']['id'] ?? 0;
 
-// Filtrar solo actividades del usuario logueado
 $filtradas = array_filter($actividades, fn($a) => ($a['user_id'] ?? 0) === $user_id);
 
-// Si hay un tipo específico, filtrar también por tipo
 if ($tipo) {
     $filtradas = array_filter($filtradas, fn($a) => $a['tipo'] === $tipo);
 }?>

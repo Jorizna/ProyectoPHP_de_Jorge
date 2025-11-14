@@ -4,7 +4,6 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Definir base URL del proyecto en XAMPP
 $base_url = '/mountain-connect/public';
 ?>
 <!DOCTYPE html>
@@ -17,17 +16,14 @@ $base_url = '/mountain-connect/public';
 <body>
 <header>
     <div class="header-container">
-        <!-- Logo -->
         <div class="logo">
             <a href="<?= $base_url ?>/index.php">
                 <img src="<?= $base_url ?>/../assets/images/logo.png" alt="MountainConnect Logo" height="50">
             </a>
         </div>
 
-        <!-- Título centrado -->
         <div class="header-title">MOUNTAIN CONNECT</div>
 
-        <!-- Navegación -->
         <nav>
             <ul>
                 <li><a href="<?= $base_url ?>/index.php">Inicio</a></li>

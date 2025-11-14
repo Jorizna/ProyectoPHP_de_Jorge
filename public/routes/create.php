@@ -2,14 +2,13 @@
 session_start();
 include_once __DIR__ . '/../../includes/header.php';
 
-// Inicializar array único para todas las actividades
 if (!isset($_SESSION['actividades']) || !is_array($_SESSION['actividades'])) {
     $_SESSION['actividades'] = [];
 }
 
 $errors = [];
 $success = '';
-$provincias = ['Madrid', 'Barcelona', 'Valencia', 'Granada', 'Zaragoza', 'Sevilla', 'Asturias'];
+$provincias = ['Madrid', 'Cataluña', 'Valencia', 'Andalucia', 'Aragon', 'Galicia', 'Asturias'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo = $_POST['tipo'] ?? '';
@@ -25,11 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nivel_fisico = $_POST['nivel_fisico'] ?? '';
     $fotos_guardadas = [];
 
+
     if ($tipo === '' || $nombre === '' || $dificultad === '' || $provincia === '' || empty($epoca)) {
         $errors[] = 'Completa todos los campos obligatorios.';
     }
 
-    // Subida de fotos
     if (isset($_FILES['fotos']) && $_FILES['fotos']['error'][0] !== 4) {
         foreach ($_FILES['fotos']['tmp_name'] as $i => $tmp_name) {
             $nombre_original = $_FILES['fotos']['name'][$i];
@@ -60,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($errors)) {
         $_SESSION['actividades'][] = [
             'id' => count($_SESSION['actividades']) + 1,
-            'user_id' => $_SESSION['user']['id'] ?? 0, // ← Guardar usuario
+            'user_id' => $_SESSION['user']['id'] ?? 0, 
             'tipo' => $tipo,
             'nombre' => $nombre,
             'dificultad' => $dificultad,
@@ -74,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'nivel_fisico' => $nivel_fisico,
             'fotos' => $fotos_guardadas
         ];
-        $success = "✅ $tipo creada correctamente.";
+        $success = "$tipo creada correctamente.";
     }
 }
 ?>

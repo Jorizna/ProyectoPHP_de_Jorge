@@ -2,7 +2,6 @@
 session_start();
 require_once __DIR__ . '/../includes/functions.php';
 
-// Aseguramos el array de usuarios
 if (!isset($_SESSION['users']) || !is_array($_SESSION['users'])) {
     $_SESSION['users'] = [];
 }
@@ -18,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $especialidad = limpiar_dato($_POST['especialidad'] ?? '');
     $provincia = limpiar_dato($_POST['provincia'] ?? '');
 
-    // Validaciones
     if ($username === '' || $email === '' || $password === '' || $confirm === '') {
         $errors[] = 'Todos los campos obligatorios deben completarse.';
     } elseif (!validar_email($email)) {
@@ -34,7 +32,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Si todo va bien
     if (empty($errors)) {
         $_SESSION['users'][] = [
             'id' => count($_SESSION['users']) + 1,

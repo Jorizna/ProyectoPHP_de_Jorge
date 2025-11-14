@@ -2,7 +2,6 @@
 session_start();
 require_once __DIR__ . '/../includes/functions.php';
 
-// Aseguramos el array de usuarios
 if (!isset($_SESSION['users']) || !is_array($_SESSION['users'])) {
     $_SESSION['users'] = [];
 }

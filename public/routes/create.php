@@ -8,7 +8,7 @@ if (!isset($_SESSION['actividades']) || !is_array($_SESSION['actividades'])) {
 
 $errors = [];
 $success = '';
-$provincias = ['Madrid', 'Cataluña', 'Valencia', 'Andalucia', 'Aragon', 'Galicia', 'Asturias'];
+$provincias = ['Madrid', 'Cataluña', 'Valencia', 'Andalucia', 'Aragón', 'Galicia', 'Asturias'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tipo = $_POST['tipo'] ?? '';

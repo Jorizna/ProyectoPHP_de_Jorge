@@ -91,13 +91,13 @@ include_once __DIR__ . '/../includes/header.php';
 
     <label>Provincia:</label><br>
     <select name="provincia" required>
-        <option value="">Selecciona provincia...</option>
+        <option value="">Selecciona comunidad...</option>
         <option value="Madrid">Madrid</option>
-        <option value="Barcelona">Barcelona</option>
+        <option value="Barcelona">Cataluña</option>
         <option value="Valencia">Valencia</option>
-        <option value="Sevilla">Sevilla</option>
-        <option value="Granada">Granada</option>
-        <option value="Zaragoza">Zaragoza</option>
+        <option value="Sevilla">Andalucía</option>
+        <option value="Granada">Galicia</option>
+        <option value="Zaragoza">Aragón</option>
         <option value="Asturias">Asturias</option>
     </select><br><br>
 

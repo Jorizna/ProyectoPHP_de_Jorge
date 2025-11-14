@@ -13,7 +13,7 @@ if ($tipo) {
 }?>
 
 <div class="container">
-    <h2>📋 <?= htmlspecialchars($tipo) ?> creadas</h2>
+    <h2>📋 <?= htmlspecialchars($tipo) ?> Creadas</h2>
 
     <p><a href="create.php?tipo=<?= urlencode($tipo) ?>">➕ Crear nueva <?= htmlspecialchars($tipo) ?></a></p>
 

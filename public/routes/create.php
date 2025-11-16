@@ -2,156 +2,162 @@
 session_start();
 include_once __DIR__ . '/../../includes/header.php';
 
-if (!isset($_SESSION['actividades']) || !is_array($_SESSION['actividades'])) {
-    $_SESSION['actividades'] = [];
-}
+// Aseguramos el array
+$_SESSION['actividades'] ??= [];
 
 $errors = [];
 $success = '';
 $provincias = ['Madrid', 'Cataluña', 'Valencia', 'Andalucia', 'Aragón', 'Galicia', 'Asturias'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $tipo = $_POST['tipo'] ?? '';
-    $nombre = trim($_POST['nombre'] ?? '');
-    $dificultad = $_POST['dificultad'] ?? '';
-    $distancia = $_POST['distancia'] ?? '';
-    $desnivel = $_POST['desnivel'] ?? '';
-    $duracion = $_POST['duracion'] ?? '';
-    $provincia = $_POST['provincia'] ?? '';
-    $epoca = $_POST['epoca'] ?? [];
-    $descripcion = trim($_POST['descripcion'] ?? '');
-    $nivel_tecnico = $_POST['nivel_tecnico'] ?? '';
-    $nivel_fisico = $_POST['nivel_fisico'] ?? '';
-    $fotos_guardadas = [];
 
+    //vakidación de datos
+    $data = [
+        'tipo' => $_POST['tipo'] ?? '',
+        'nombre' => trim($_POST['nombre'] ?? ''),
+        'dificultad' => $_POST['dificultad'] ?? '',
+        'distancia' => $_POST['distancia'] ?? '',
+        'desnivel' => $_POST['desnivel'] ?? '',
+        'duracion' => $_POST['duracion'] ?? '',
+        'provincia' => $_POST['provincia'] ?? '',
+        'epoca' => $_POST['epoca'] ?? [],
+        'descripcion' => trim($_POST['descripcion'] ?? ''),
+        'nivel_tecnico' => $_POST['nivel_tecnico'] ?? '',
+        'nivel_fisico' => $_POST['nivel_fisico'] ?? '',
+    ];
 
-    if ($tipo === '' || $nombre === '' || $dificultad === '' || $provincia === '' || empty($epoca)) {
-        $errors[] = 'Completa todos los campos obligatorios.';
+    $obligatorios = ['tipo', 'nombre', 'dificultad', 'provincia'];
+    foreach ($obligatorios as $campo) {
+        if ($data[$campo] === '') {
+            $errors[] = "El campo '$campo' es obligatorio.";
+        }
     }
 
-    if (isset($_FILES['fotos']) && $_FILES['fotos']['error'][0] !== 4) {
-        foreach ($_FILES['fotos']['tmp_name'] as $i => $tmp_name) {
+    if (empty($data['epoca'])) {
+        $errors[] = 'Selecciona al menos una época recomendada.';
+    }
+
+    //procesamiento de fotos
+    $fotos_guardadas = [];
+
+    if (!empty($_FILES['fotos']['name'][0])) {
+
+        foreach ($_FILES['fotos']['tmp_name'] as $i => $tmp) {
+
             $nombre_original = $_FILES['fotos']['name'][$i];
-            $tipo_mime = mime_content_type($tmp_name);
+            $tipo_mime = mime_content_type($tmp);
             $tamano = $_FILES['fotos']['size'][$i];
 
-            if (!in_array($tipo_mime, ['image/jpeg', 'image/png', 'image/jpg'])) {
-                $errors[] = "El archivo {$nombre_original} no es válido.";
+            if (!in_array($tipo_mime, ['image/jpeg', 'image/png'])) {
+                $errors[] = "Archivo no permitido: $nombre_original";
                 continue;
             }
+
             if ($tamano > 2 * 1024 * 1024) {
-                $errors[] = "El archivo {$nombre_original} supera los 2MB.";
+                $errors[] = "La imagen $nombre_original supera los 2MB.";
                 continue;
             }
 
-            $extension = pathinfo($nombre_original, PATHINFO_EXTENSION);
-            $nombre_nuevo = uniqid('act_', true) . '.' . $extension;
-            $ruta_destino = __DIR__ . '/../../uploads/photos/' . $nombre_nuevo;
+            $ext = pathinfo($nombre_original, PATHINFO_EXTENSION);
+            $nuevo = uniqid('img_') . ".$ext";
+            $destino = __DIR__ . '/../../uploads/photos/' . $nuevo;
 
-            if (move_uploaded_file($tmp_name, $ruta_destino)) {
-                $fotos_guardadas[] = $nombre_nuevo;
-            } else {
-                $errors[] = "Error al subir la imagen {$nombre_original}.";
+            if (move_uploaded_file($tmp, $destino)) {
+                $fotos_guardadas[] = $nuevo;
             }
         }
     }
 
-    if (empty($errors)) {
-        $_SESSION['actividades'][] = [
-            'id' => count($_SESSION['actividades']) + 1,
-            'user_id' => $_SESSION['user']['id'] ?? 0, 
-            'tipo' => $tipo,
-            'nombre' => $nombre,
-            'dificultad' => $dificultad,
-            'distancia' => $distancia,
-            'desnivel' => $desnivel,
-            'duracion' => $duracion,
-            'provincia' => $provincia,
-            'epoca' => $epoca,
-            'descripcion' => $descripcion,
-            'nivel_tecnico' => $nivel_tecnico,
-            'nivel_fisico' => $nivel_fisico,
-            'fotos' => $fotos_guardadas
-        ];
-        $success = "$tipo creada correctamente.";
+    //guardado de la actividad
+    if (!$errors) {
+        $data['id'] = count($_SESSION['actividades']) + 1;
+        $data['user_id'] = $_SESSION['user']['id'] ?? 0;
+        $data['fotos'] = $fotos_guardadas;
+
+        $_SESSION['actividades'][] = $data;
+        $success = "Actividad creada correctamente.";
     }
 }
 ?>
 
-<div class="container">
-    <h2>➕ Crear nueva actividad</h2>
+<link rel="stylesheet" href="../../assets/css/pages/create.css">
+
+<div class="form-container">
+    <h2>Crear Actividad</h2>
 
     <?php if ($success): ?>
-        <div class="success"><?= htmlspecialchars($success) ?></div>
+        <div class="success"><?= $success ?></div>
     <?php endif; ?>
 
-    <?php if (!empty($errors)): ?>
+    <?php if ($errors): ?>
         <div class="error">
-            <ul>
-                <?php foreach ($errors as $err): ?>
-                    <li><?= htmlspecialchars($err) ?></li>
-                <?php endforeach; ?>
-            </ul>
+            <?php foreach ($errors as $e): ?>
+                <p><?= $e ?></p>
+            <?php endforeach; ?>
         </div>
     <?php endif; ?>
 
     <form method="post" enctype="multipart/form-data">
-        <label>Tipo de actividad:</label>
+
+        <label>Tipo:</label>
         <select name="tipo" required>
             <option value="">-- Selecciona --</option>
-            <option value="Ruta">Ruta</option>
-            <option value="Ferrata">Ferrata</option>
-            <option value="Escalada">Vía de Escalada</option>
-        </select><br><br>
+            <option>Ruta</option>
+            <option>Ferrata</option>
+            <option>Escalada</option>
+        </select>
 
         <label>Nombre:</label>
-        <input type="text" name="nombre" required><br><br>
+        <input type="text" name="nombre" required>
 
         <label>Dificultad:</label>
         <select name="dificultad" required>
             <option value="">-- Selecciona --</option>
-            <option value="Fácil">Fácil</option>
-            <option value="Moderada">Moderada</option>
-            <option value="Difícil">Difícil</option>
-            <option value="Muy Difícil">Muy Difícil</option>
-        </select><br><br>
+            <option>Fácil</option>
+            <option>Moderada</option>
+            <option>Difícil</option>
+            <option>Muy Difícil</option>
+        </select>
 
         <label>Distancia (km):</label>
-        <input type="number" name="distancia" step="0.1"><br><br>
+        <input type="number" name="distancia" step="0.1">
 
         <label>Desnivel (m):</label>
-        <input type="number" name="desnivel"><br><br>
+        <input type="number" name="desnivel">
 
         <label>Duración (h):</label>
-        <input type="number" name="duracion" step="0.1"><br><br>
+        <input type="number" name="duracion" step="0.1">
 
         <label>Provincia:</label>
         <select name="provincia" required>
             <option value="">-- Selecciona --</option>
-            <?php foreach ($provincias as $p) echo "<option>" . htmlspecialchars($p) . "</option>"; ?>
-        </select><br><br>
+            <?php foreach ($provincias as $p): ?>
+                <option><?= $p ?></option>
+            <?php endforeach; ?>
+        </select>
 
-        <label>Época recomendada:</label><br>
-        <label><input type="checkbox" name="epoca[]" value="Primavera"> Primavera</label>
-        <label><input type="checkbox" name="epoca[]" value="Verano"> Verano</label>
-        <label><input type="checkbox" name="epoca[]" value="Otoño"> Otoño</label>
-        <label><input type="checkbox" name="epoca[]" value="Invierno"> Invierno</label><br><br>
+        <label>Épocas recomendadas:</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="epoca[]" value="Primavera"> Primavera</label>
+            <label><input type="checkbox" name="epoca[]" value="Verano"> Verano</label>
+            <label><input type="checkbox" name="epoca[]" value="Otoño"> Otoño</label>
+            <label><input type="checkbox" name="epoca[]" value="Invierno"> Invierno</label>
+        </div>
 
-        <label>Descripción:</label><br>
-        <textarea name="descripcion" rows="4"></textarea><br><br>
+        <label>Descripción:</label>
+        <textarea name="descripcion"></textarea>
 
         <label>Nivel técnico (1-5):</label>
-        <input type="number" name="nivel_tecnico" min="1" max="5"><br><br>
+        <input type="number" name="nivel_tecnico" min="1" max="5">
 
         <label>Nivel físico (1-5):</label>
-        <input type="number" name="nivel_fisico" min="1" max="5"><br><br>
+        <input type="number" name="nivel_fisico" min="1" max="5">
 
-        <label>Fotos (opcional):</label>
-        <input type="file" name="fotos[]" multiple accept=".jpg,.jpeg,.png"><br><br>
+        <label>Fotos:</label>
+        <input type="file" name="fotos[]" multiple>
 
-        <button type="submit">💾 Guardar</button>
+        <button type="submit">Guardar</button>
     </form>
 </div>
 
 <?php include_once __DIR__ . '/../../includes/footer.php'; ?>
-<link rel="stylesheet" href="<?= $base_url ?>/../assets/css/pages/login.css">

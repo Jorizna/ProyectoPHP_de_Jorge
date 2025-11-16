@@ -1,5 +1,5 @@
 <?php
-// Comprueba sesión y redirige al login si no hay usuario
+// comprueba sesión y redirige al login si no hay usuario
 if (session_status() === PHP_SESSION_NONE) {
 session_start();
 }
